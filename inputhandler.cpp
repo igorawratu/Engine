@@ -63,15 +63,23 @@ void InputHandler::checkKeyEvent(const SDL_Event& event){
 
 void InputHandler::resetKeys(){
     std::list<SDL_Keycode> keys_to_reset;
+    std::list<SDL_Keycode> keys_down;
 
     for(auto key : key_states_){
         if(key.second == InputKeyState::KEYUP){
             keys_to_reset.push_back(key.first);
         }
+        else if(key.second == InputKeyState::KEYDOWN){
+            keys_down.push_back(key.first);
+        }
     }
 
     for(auto key_code : keys_to_reset){
         key_states_[key_code] = InputKeyState::KEYNONE;
+    }
+
+    for(auto key_code : keys_down){
+        key_states_[key_code] = InputKeyState::KEYPRESSED;
     }
 }
 
