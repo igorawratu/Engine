@@ -80,20 +80,56 @@ public:
      */
     bool isKey(const SDL_Keycode& key_code);
 
+    /**
+     * @brief checks if the passed button \p btn has just been clicked
+     * @param btn The button to check for
+     * @return a tuple with the first element indicating if the condition is true, the x position, the y position, and the number of clicks
+     */
     std::tuple<bool, int, int, int> isMouseBtnDown(const Uint8& btn);
 
+    /**
+     * @brief checks if the passed button \p btn has just been released
+     * @param btn The button to check for
+     * @return a tuple with the first element indicating if the condition is true, the x position, and the y position
+     */
     std::tuple<bool, int, int> isMouseBtnUp(const Uint8& btn);
 
+    /**
+     * @brief checks if the passed button \p btn is currently being clicked
+     * @param btn The button to check for
+     * @return a tuple with the first element indicating if the condition is true, the x position, the y position, and the number of clicks
+     */
     std::tuple<bool, int, int, int> isMouseBtn(const Uint8& btn);
 
+    /**
+     * @brief Provides the relative mouse movement over the past frame
+     * @return a pair containing the x and y relative movements
+     */\
     std::pair<int, int> mouseWheelMovement();
 
+    /**
+     * @brief Provides the position of the mouse. If the mouse has not yet been moved, this function returns 0,0 as the coordinates, as
+     * it can only register mouse positions on mouse move.
+     * @return a pair containing the x and y mouse positions
+     */
     std::pair<int, int> mousePosition();
 
+    /**
+     * @brief Provides the relative movement of the mouse in the past frame
+     * @return a pair contianing the x and y relative positions of the mouse
+     */
     std::pair<int, int> mouseRelativeMotion();
 
+    /**
+     * @brief Checks if the mouse has moved in the last frame
+     * @return True if mouse has moved, otherwise false
+     */
     bool mouseMoved();
 
+    /**
+     * @brief Checks if the mouse wheel has been scrolled in the last frame
+     * @return True if mouse wheel has moved, otherwise false
+     */
     bool mouseWheelMoved();
 };
 
