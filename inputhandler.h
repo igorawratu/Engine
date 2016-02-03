@@ -97,7 +97,8 @@ public:
     /**
      * @brief checks if the passed button \p btn is currently being clicked
      * @param btn The button to check for
-     * @return a tuple with the first element indicating if the condition is true, the x position, the y position, and the number of clicks
+     * @return a tuple with the first element indicating if the condition is true, the x and y coordinates of the last
+     * clicked position (if you want the actual mouse position, then use mousePosition()), and the number of clicks
      */
     std::tuple<bool, int, int, int> isMouseBtn(const Uint8& btn);
 

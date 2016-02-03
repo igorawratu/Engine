@@ -14,16 +14,33 @@ InputHandler::~InputHandler(){
 
 void InputHandler::frame(){
     resetKeys();
+    resetMouseInfo();
 
+    //remove while loop after testing
     while(true){
         SDL_Event event;
         while(SDL_PollEvent(&event) != 0){
-            //remove this first condition when not testing anymore
-            if(event.type == SDL_QUIT){
-                exit(0);
-            }
-            else if(event.type == SDL_KEYUP || event.type == SDL_KEYDOWN){
-                checkKeyEvent(event);
+            switch(event.type){
+                //remove this first condition when not testing anymore
+                case SDL_QUIT:
+                    exit(0);
+                case SDL_KEYUP:
+                case SDL_KEYDOWN:
+                    checkKeyEvent(event);
+                    break;
+                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEBUTTONUP: {
+                    checkMouseBtnEvent(event);
+                    break;
+                }
+                case SDL_MOUSEMOTION:
+                    checkMouseMoveEvent(event);
+                    break;
+                case SDL_MOUSEWHEEL:
+                    checkMouseWheelEvent(event);
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -80,15 +97,25 @@ bool InputHandler::isKey(const SDL_Keycode& key_code){
 
 void InputHandler::resetMouseInfo(){
     std::list<Uint8> mousebtns_to_reset;
+    std::list<Uint8> mousebtns_to_down;
 
     for(auto btn : mouse_button_states_){
         if(std::get<2>(btn.second) == MouseClickedState::MOUSEBTNUP){
             mousebtns_to_reset.push_back(btn.first);
         }
+        else if(std::get<2>(btn.second) == MouseClickedState::MOUSEBTNDOWN){
+            mousebtns_to_down.push_back(btn.first);
+        }
     }
 
     for(auto btn_info : mousebtns_to_reset){
         MouseClickedInfo new_mousebtn_info = std::make_tuple(0, 0, MouseClickedState::MOUSEBTNNONE, 0);
+        mouse_button_states_[btn_info] = new_mousebtn_info;
+    }
+
+    for(auto btn_info : mousebtns_to_down){
+        MouseClickedInfo btn = mouse_button_states_[btn_info];
+        MouseClickedInfo new_mousebtn_info = std::make_tuple(std::get<0>(btn), std::get<1>(btn), MouseClickedState::MOUSEBTNPRESSED, std::get<3>(btn));
         mouse_button_states_[btn_info] = new_mousebtn_info;
     }
 
@@ -118,7 +145,7 @@ void InputHandler::checkMouseBtnEvent(const SDL_Event& event){
 
         mouse_button_states_[btn] = std::make_tuple(x, y, curr_state, clicks);
     }
-    else if(event.type == SDL_KEYUP){
+    else if(event.type == SDL_MOUSEBUTTONUP){
         Uint8 btn = event.button.button;
 
         int x = event.button.x;
@@ -180,7 +207,7 @@ std::tuple<bool, int, int, int> InputHandler::isMouseBtnDown(const Uint8& btn){
 }
 
 std::tuple<bool, int, int> InputHandler::isMouseBtnUp(const Uint8& btn){
-    auto btn_up_status = isMouseBtnStatus(btn, MouseClickedState::MOUSEBTNDOWN);
+    auto btn_up_status = isMouseBtnStatus(btn, MouseClickedState::MOUSEBTNUP);
 
     bool is_active = std::get<0>(btn_up_status);
     int x = std::get<1>(btn_up_status);
