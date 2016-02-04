@@ -129,7 +129,7 @@ void InputHandler::resetMouseInfo(){
     mouse_wheel_movement_ = std::make_pair(0, 0);
 
     int mouse_x, mouse_y, mouse_xrel, mouse_yrel;
-    Uint btntmp;
+    Uint8 btntmp;
 
     btntmp = SDL_GetMouseState(&mouse_x, &mouse_y);
     btntmp = SDL_GetRelativeMouseState(&mouse_xrel, &mouse_yrel);

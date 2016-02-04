@@ -71,9 +71,9 @@ void Timer::frame(){
     int diff = new_tick_time - actual_time_elapsed_;
     actual_time_elapsed_ = new_tick_time;
 
-    if(paused){
+    if(paused_){
         paused_time_ms_ += diff;
-        paused_time_ = toSecond(paused_time_ms_);
+        paused_time_ = toSeconds(paused_time_ms_);
         time_since_last_frame_ms_ = 0;
     }
     else{
