@@ -20,7 +20,8 @@ private:
     std::unordered_map<Uint8, MouseClickedInfo> mouse_button_states_;
 
     //x, y
-    std::pair<int, int> mouse_move_position_;
+    bool mouse_moved_;
+    std::pair<int, int> mouse_position_;
     std::pair<int, int> mouse_relative_motion_;
 
 private:

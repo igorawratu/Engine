@@ -9,8 +9,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 #check dependencies
 find_package(SDL2 REQUIRED)
 
-MESSAGE(STATUS "Env: " $ENV{SDL2DIR} " include: " ${SDL2_INCLUDE_DIR} " lib: " ${SDL2_LIBRARY_TEMP})
-
 #Includes
 include_directories( ${PROJECT_NAME}
     ${SDL2_INCLUDE_DIR}

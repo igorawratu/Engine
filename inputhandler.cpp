@@ -3,8 +3,10 @@
 #include <iostream>
 
 InputHandler::InputHandler(){
-    mouse_move_position_ = std::make_pair(0, 0);
+    mouse_position_ = std::make_pair(0, 0);
     mouse_relative_motion_ = std::make_pair(0, 0);
+
+    mouse_moved_ = false;
 
     mouse_wheel_movement_ = std::make_pair(0, 0);
 }
@@ -16,32 +18,26 @@ void InputHandler::frame(){
     resetKeys();
     resetMouseInfo();
 
-    //remove while loop after testing
-    while(true){
-        SDL_Event event;
-        while(SDL_PollEvent(&event) != 0){
-            switch(event.type){
-                //remove this first condition when not testing anymore
-                case SDL_QUIT:
-                    exit(0);
-                case SDL_KEYUP:
-                case SDL_KEYDOWN:
-                    checkKeyEvent(event);
-                    break;
-                case SDL_MOUSEBUTTONDOWN:
-                case SDL_MOUSEBUTTONUP: {
-                    checkMouseBtnEvent(event);
-                    break;
-                }
-                case SDL_MOUSEMOTION:
-                    checkMouseMoveEvent(event);
-                    break;
-                case SDL_MOUSEWHEEL:
-                    checkMouseWheelEvent(event);
-                    break;
-                default:
-                    break;
+    SDL_Event event;
+    while(SDL_PollEvent(&event) != 0){
+        switch(event.type){
+            case SDL_KEYUP:
+            case SDL_KEYDOWN:
+                checkKeyEvent(event);
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP: {
+                checkMouseBtnEvent(event);
+                break;
             }
+            case SDL_MOUSEMOTION:
+                checkMouseMoveEvent(event);
+                break;
+            case SDL_MOUSEWHEEL:
+                checkMouseWheelEvent(event);
+                break;
+            default:
+                break;
         }
     }
 }
@@ -104,6 +100,8 @@ bool InputHandler::isKey(const SDL_Keycode& key_code){
 }
 
 void InputHandler::resetMouseInfo(){
+    mouse_moved_ = false;
+
     std::list<Uint8> mousebtns_to_reset;
     std::list<Uint8> mousebtns_to_down;
 
@@ -127,11 +125,17 @@ void InputHandler::resetMouseInfo(){
         mouse_button_states_[btn_info] = new_mousebtn_info;
     }
 
-    //mouse motion resets
-    mouse_relative_motion_ = std::make_pair(0, 0);
-
     //mouse wheel resets
     mouse_wheel_movement_ = std::make_pair(0, 0);
+
+    int mouse_x, mouse_y, mouse_xrel, mouse_yrel;
+    Uint btntmp;
+
+    btntmp = SDL_GetMouseState(&mouse_x, &mouse_y);
+    btntmp = SDL_GetRelativeMouseState(&mouse_xrel, &mouse_yrel);
+
+    mouse_position_ = std::make_pair(mouse_x, mouse_y);
+    mouse_relative_motion_ = std::make_pair(mouse_xrel, mouse_yrel);
 }
 
 void InputHandler::checkMouseBtnEvent(const SDL_Event& event){
@@ -178,8 +182,9 @@ void InputHandler::checkMouseMoveEvent(const SDL_Event& event){
         return;
     }
 
-    mouse_move_position_ = std::make_pair(event.motion.x, event.motion.y);
-    mouse_relative_motion_ = std::make_pair(event.motion.xrel, event.motion.yrel);
+    //mouse positions are updated in reset function, as they need to happen every frame rather than
+    //when event gets called
+    mouse_moved_ = true;
 }
 
 void InputHandler::checkMouseWheelEvent(const SDL_Event& event){
@@ -244,7 +249,7 @@ std::pair<int, int> InputHandler::mouseWheelMovement(){
 }
 
 std::pair<int, int> InputHandler::mousePosition(){
-    return mouse_move_position_;
+    return mouse_position_;
 }
 
 std::pair<int, int> InputHandler::mouseRelativeMotion(){
@@ -252,7 +257,7 @@ std::pair<int, int> InputHandler::mouseRelativeMotion(){
 }
 
 bool InputHandler::mouseMoved(){
-    return mouse_relative_motion_.first == 0 && mouse_relative_motion_.second == 0;
+    return mouse_moved_;
 }
 
 bool InputHandler::mouseWheelMoved(){
