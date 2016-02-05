@@ -1,4 +1,5 @@
 #include "timer.h"
+#include <iostream>
 
 Timer::Timer(){
     total_time_elapsed_ms_ = SDL_GetTicks();
