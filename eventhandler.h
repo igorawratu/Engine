@@ -6,8 +6,13 @@
 #include <unordered_map>
 #include <tuple>
 
-class InputHandler{
+class EventHandler{
 private:
+    bool quit_;
+
+    typedef std::unordered_map<Uint32, std::unordered_map<Uint8, std::pair<Sint32, Sint32> > > WindowEventDatabase;
+    WindowEventDatabase window_events_;
+
     enum InputKeyState{KEYDOWN, KEYUP, KEYPRESSED, KEYNONE};
     std::unordered_map<SDL_Keycode, InputKeyState> key_states_;
 
@@ -25,6 +30,18 @@ private:
     std::pair<int, int> mouse_relative_motion_;
 
 private:
+    //forwards event handler by 1 frame
+    void frame();
+
+    //helper for window event checking
+    bool windowEventExists(const Uint32& windowID, const Uint8& event_type);
+
+    //clears all window events
+    void resetWindowEvents();
+
+    //Updates the window events database with the valid window events from the current frame
+    void checkWindowEvent(const SDL_Event& event);
+
     //resets all keys that are in KEYUP state to none. As this is called at the beginning of frame, it essentially ensures
     //that keyups last 1 frame, before being reset to the default state.
     void resetKeys();
@@ -52,13 +69,109 @@ private:
     std::tuple<bool, int, int, int> isMouseBtnStatus(const Uint8& btn,const MouseClickedState& state);
 
 public:
-    InputHandler();
+    EventHandler();
     //not allowed to copy
-    InputHandler(const InputHandler&) = delete;
-    ~InputHandler();
+    EventHandler(const EventHandler&) = delete;
+    ~EventHandler();
 
-    //change this to private later on, only to be accessed by friends
-    void frame();
+    /**
+     * @brief Checks if the quit event has been received
+     * @return true if event has been received, otherwise false
+     */
+    bool isQuit(){
+        return quit_;
+    }
+
+    /**
+     * @brief Checks if the window has been shown (from an unshown state) over the course of the past frame
+     * @param windowID ID of the window to check
+     * @return true if window has been shown, otherwise false
+     */
+    bool windowShown(const Uint32& windowID);
+
+    /**
+     * @brief Checks if the window has been hidden in the past frame
+     * @param windowID ID of the window to check
+     * @return true if window has been hidden, otherwise false
+     */
+    bool windowHidden(const Uint32& windowID);
+
+    /**
+     * @brief Checks if the window has been exposed in the past frame
+     * @param windowID ID of the window to check
+     * @return true if window has been exposed, otherwise false
+     */
+    bool windowExposed(const Uint32& windowID);
+
+    /**
+     * @brief Checks if window has been minimized in the past frame
+     * @param windowID ID of the window to check
+     * @return true if window has been minimized, otherwise false
+     */
+    bool windowMinimized(const Uint32& windowID);
+
+    /**
+     * @brief Checks if window has been maximized in the past frame
+     * @param windowID ID of the window to check
+     * @return true if window has been maximized, otherwise false
+     */
+    bool windowMaximized(const Uint32& windowID);
+
+    /**
+     * @brief Checks if window has been restored from a minimized state in the past frame
+     * @param windowID ID of the window to check
+     * @return true if window has been restored, otherwise false
+     */
+    bool windowRestored(const Uint32& windowID);
+
+    /**
+     * @brief Checks if the mouse has entered the window frame in the past frame
+     * @param windowID ID of the window to check
+     * @return true if mouse has entered the window, otherwise false
+     */
+    bool mouseEnteredWindow(const Uint32& windowID);
+
+    /**
+     * @brief Checks if the mouse has left the window frame in the past frame
+     * @param windowID ID of the window to check
+     * @return true if mouse has left the window, otherwise false
+     */
+    bool mouseLeftWindow(const Uint32& windowID);
+
+    /**
+     * @brief Checks if the window has gained focus in the past frame
+     * @param windowID ID of the window to check
+     * @return true if the window has gained focus, otherwise false
+     */
+    bool windowFocusGained(const Uint32& windowID);
+
+    /**
+     * @brief Checks if the window has lost focus in the past frame
+     * @param windowID ID of the window to check
+     * @return true if the window has lost focus, otherwise false
+     */
+    bool windowFocusLost(const Uint32& windowID);
+
+    /**
+     * @brief Checks if the window has closed in the past frame (this event occurs in multi-window systems when window is x'd, as opposed to the quit event)
+     * @param windowID ID of the window to check
+     * @return true if window has been closed, otherwise false
+     */
+    bool windowClosed(const Uint32& windowID);
+
+    /**
+     * @brief Checks if the window has moved in the past frame
+     * @param windowID ID of the window to check
+     * @return a tuple consisting of a bool to specify if the window has moved, and 2 integers specifying the new window x and y positional coordinates
+     */
+    std::tuple<bool, int, int> windowMoved(const Uint32& windowID);
+
+    /**
+     * @brief Checks if the window has been resized in the past frame
+     * @param windowID ID of the window to check
+     * @return a tuple consisting of a bool to specify if the window has been resized, and 2 integers specifying the new window width and height (in that order)
+     */
+    std::tuple<bool, int, int> windowResized(const Uint32& windowID);
 
     /**
      * @brief Checks if \p key_code has just (within the last frame) been pressed

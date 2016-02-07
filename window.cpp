@@ -102,6 +102,12 @@ bool Window::isMinimized(){
     return flags & SDL_WINDOW_MINIMIZED;
 }
 
+bool Window::isMaximized(){
+    Uint32 flags = SDL_GetWindowFlags(window_);
+
+    return flags & SDL_WINDOW_MAXIMIZED;
+}
+
 bool Window::inputGrabbed(){
     Uint32 flags = SDL_GetWindowFlags(window_);
 

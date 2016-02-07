@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <memory>
 
-#include "inputhandler.h"
+#include "eventhandler.h"
 #include "timer.h"
 #include "window.h"
 

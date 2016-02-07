@@ -18,6 +18,9 @@ private:
     bool paused_;
 
 private:
+    //forwards timer by a frame
+    void frame();
+
     //helper for frame(), converts int ms value to float second value
     float toSeconds(int ms);
 
@@ -66,9 +69,6 @@ public:
      * @return
      */
     bool isPaused();
-
-    //make the private later so that only friends can call it
-    void frame();
 
     /**
      * @brief Resets all the timers except the actual time elapsed. Also unpauses the timer.

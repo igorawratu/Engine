@@ -15,6 +15,11 @@ private:
     SDL_Window* window_;
     SDL_GLContext context_;
 
+private:
+    //forwards window by a frame, the main point of this function is to just swap buffers, so this would get called at the end of the
+    //engine frame function
+    void frame();
+
 public:
     Window(std::string title = "Engine", int width = 0, int height = 0, int x_pos = UNDEFINED_WINDOW_POS, int y_pos = UNDEFINED_WINDOW_POS, bool maximized = true,
            bool fullscreen = true, bool resizable = true, bool focus = true);
@@ -22,7 +27,7 @@ public:
     Window(const Window& other) = delete;
     ~Window();
 
-    //The various functions in the windows class merely checks for
+    //The various functions in the windows class merely checks for window state, if you wish to check for window events, have a look at the event handler
 
     /**
      * @brief Makes the window's opengl context the current one, resulting in all rendering and such being performed onto this window.
@@ -58,6 +63,12 @@ public:
      * @return true if the window is currently minimized, otherwise false
      */
     bool isMinimized();
+
+    /**
+     * @brief Checks if window is in a maximized state
+     * @return true if the window is currently maximized, otherwise false
+     */
+    bool isMaximized();
 
     /**
      * @brief Checks if the window has grabbed the input (this means that inputs such as mouse is locked within the window)
@@ -101,9 +112,6 @@ public:
      * @param height The new height of the window
      */
     void resizeWindow(int width, int height);
-
-    //put private later
-    void frame();
 };
 
 #endif // WINDOW_H
