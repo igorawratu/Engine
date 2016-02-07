@@ -4,6 +4,7 @@
 #include <SDL.h>
 
 class Timer{
+friend class Engine;
 private:
     int total_time_elapsed_ms_;
     int actual_time_elapsed_ms_;

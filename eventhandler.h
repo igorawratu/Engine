@@ -1,5 +1,5 @@
-#ifndef INPUTHANDLER_H
-#define INPUTHANDLER_H
+#ifndef EVENTHANDLER_H
+#define EVENTHANDLER_H
 
 #include <SDL.h>
 #include <memory>
@@ -7,6 +7,7 @@
 #include <tuple>
 
 class EventHandler{
+friend class Engine;
 private:
     bool quit_;
 
@@ -248,5 +249,5 @@ public:
     bool mouseWheelMoved();
 };
 
-#endif // INPUTHANDLER_H
+#endif // EVENTHANDLER_H
 

@@ -11,6 +11,7 @@ const int UNDEFINED_WINDOW_POS = -2;
 
 class Window
 {
+friend class Engine;
 private:
     SDL_Window* window_;
     SDL_GLContext context_;
