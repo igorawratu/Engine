@@ -143,7 +143,7 @@ void Window::resizeWindow(int width, int height){
 
     bool fullscreen = isFullScreen();
     if(fullscreen){
-        SDL_SetWindowFullscreen(window_, SDL_WINDOW_FULLSCREEN_DESKTOP);
+        SDL_SetWindowFullscreen(window_, 0);
     }
 
     SDL_SetWindowSize(window_, width, height);

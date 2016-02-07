@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    Window w("Hello", 800, 600, CENTER_WINDOW_POS, CENTER_WINDOW_POS, true, false, true, false);
+    Window w("Hello", 800, 600, CENTER_WINDOW_POS, CENTER_WINDOW_POS, true, true, true, false);
 
     SDL_Delay(5000);
 
