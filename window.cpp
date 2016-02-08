@@ -37,7 +37,9 @@ Window::Window(std::string title, int width, int height, int x_pos, int y_pos, b
         y_pos = SDL_WINDOWPOS_CENTERED;
     }
 
-    flags |= maximized ? SDL_WINDOW_MAXIMIZED : SDL_WINDOW_MINIMIZED;
+    if(maximized){
+        flags |= SDL_WINDOW_MAXIMIZED;
+    }
 
     if(fullscreen){
         flags |= SDL_WINDOW_FULLSCREEN;
