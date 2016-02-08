@@ -64,15 +64,15 @@ if (WIN32)
           NAMES
               glew GLEW glew32s glew32
           PATHS
-              ${GLEW_LOCATION}/lib/x64
-              ${GLEW_LOCATION}/lib/Release/x64
-              ${GLEW_LOCATION}/lib/Release MX/x64
-              $ENV{GLEW_LOCATION}/lib/x64
-              $ENV{GLEW_LOCATION}/lib/Release/x64
-              $ENV{GLEW_LOCATION}/lib/Release MX/x64
-              $ENV{PROGRAMFILES}/GLEW/lib/x64
+              ${GLEW_LOCATION}/lib/Win32
+              ${GLEW_LOCATION}/lib/Release/Win32
+              ${GLEW_LOCATION}/lib/Release MX/Win32
+              $ENV{GLEW_LOCATION}/lib/Win32
+              $ENV{GLEW_LOCATION}/lib/Release/Win32
+              $ENV{GLEW_LOCATION}/lib/Release MX/Win32
+              $ENV{PROGRAMFILES}/GLEW/lib/Win32
               ${PROJECT_SOURCE_DIR}/extern/glew/bin
-              ${PROJECT_SOURCE_DIR}/extern/glew/lib/x64
+              ${PROJECT_SOURCE_DIR}/extern/glew/lib/Win32
               ${GLEW_LOCATION}/lib
               $ENV{GLEW_LOCATION}/lib
               $ENV{PROGRAMFILES}/GLEW/lib

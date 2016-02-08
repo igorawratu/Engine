@@ -1,9 +1,13 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#define GLEW_STATIC
+#define NO_SDL_GLEXT
+
 #include <SDL.h>
 #include <GL/glew.h>
 #include <SDL_opengl.h>
+#include <GL/glu.h>
 
 #include <memory>
 #include <unordered_map>
@@ -26,10 +30,21 @@ private:
 
     std::unordered_map<Uint32, std::unique_ptr<Window>> windows_;
 
+    GLuint program_;
+    GLint vert_location_;
+    GLuint vert_buffer_;
+    GLuint idx_buffer_;
+    GLuint vao_;
+
+
 private:
     Engine();
     Engine(const Engine& other) = delete;
     ~Engine();
+
+    bool initShaders();
+    bool initVertDat();
+    void render();
 
 public:
     static Engine* engine();
