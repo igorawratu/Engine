@@ -2,15 +2,7 @@
 #include <list>
 #include <iostream>
 
-EventHandler::EventHandler(){
-    mouse_position_ = std::make_pair(0, 0);
-    mouse_relative_motion_ = std::make_pair(0, 0);
-
-    mouse_moved_ = false;
-
-    mouse_wheel_movement_ = std::make_pair(0, 0);
-
-    quit_ = false;
+EventHandler::EventHandler() : mouse_position_(0, 0), mouse_relative_motion_(0, 0), mouse_moved_(false), mouse_wheel_movement_(0, 0), quit_(false){
 }
 
 EventHandler::~EventHandler(){

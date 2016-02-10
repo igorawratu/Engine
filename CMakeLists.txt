@@ -14,7 +14,8 @@ find_package(GLEW REQUIRED)
 include_directories( ${PROJECT_NAME}
     ${SDL2_INCLUDE_DIR}
     ${GLEW_INCLUDE_DIR}
+    $ENV{EIGEN3_INCLUDE_DIR}
 )
-MESSAGE(STATUS ${GLEW_INCLUDE_DIR} " " ${GLEW_LIBRARY})
+
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${GLEW_LIBRARY} opengl32)

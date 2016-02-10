@@ -15,9 +15,7 @@ bool checkSDLErrors(int code, std::string message){
 
 std::unique_ptr<Engine> Engine::engine_ = nullptr;
 
-Engine::Engine()
-{
-    initialized_ = false;
+Engine::Engine() : initialized_(false) {
 }
 
 Engine::~Engine(){
