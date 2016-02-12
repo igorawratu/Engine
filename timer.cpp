@@ -1,7 +1,7 @@
 #include "timer.h"
 #include <iostream>
 
-Timer::Timer() : total_time_elapsed_ms_(SDL_GetTicks), actual_time_elapsed_ms_(0),
+Timer::Timer() : total_time_elapsed_ms_(SDL_GetTicks()), actual_time_elapsed_ms_(0),
                 paused_time_ms_(0), time_since_last_frame_ms_(0),
                 total_time_elapsed_(toSeconds(total_time_elapsed_ms_)),
                 actual_time_elapsed_(0.f), paused_time_(0.f),
