@@ -1,10 +1,10 @@
 #include "scenenode.h"
 
-SceneNode::SceneNode() : SceneNode("Nameless", nullptr){
+SceneNode::SceneNode() : SceneNode("Nameless"){
 }
 
-SceneNode::SceneNode(std::string name, SceneNode* parent) : parent_(parent), name_(name), rotation_(Eigen::Quaternion<float>::Identity()),
-                                                                            translation_(0.f, 0.f, 0.f), scale_(1.f, 1.f, 1.f){
+SceneNode::SceneNode(std::string name) : parent_(nullptr), name_(name), rotation_(Eigen::Quaternion<float>::Identity()),
+                                         translation_(0.f, 0.f, 0.f), scale_(1.f, 1.f, 1.f){
 }
 
 SceneNode::~SceneNode(){
@@ -84,6 +84,19 @@ std::shared_ptr<SceneNode> SceneNode::findChild(const std::string& name){
     return nullptr;
 }
 
+void SceneNode::frame(const Eigen::Affine3f& parent_world_transform_){
+    //frame logic for components
+
+    auto transform = worldTransform();
+    for(auto& child : children_){
+        child->frame(transform);
+    }
+}
+
+void SceneNode::name(std::string nme){
+    name_ = nme;
+}
+
 std::list<std::shared_ptr<SceneNode> > SceneNode::findChildren(const std::string& name){
     std::list<std::shared_ptr<SceneNode> > children;
 
@@ -97,4 +110,22 @@ std::list<std::shared_ptr<SceneNode> > SceneNode::findChildren(const std::string
     }
 
     return children;
+}
+
+bool SceneNode::removeChild(const std::shared_ptr<SceneNode>& child){
+    auto child_iter = std::find(children_.begin(), children_.end(), child);
+    if(child_iter == children_.end()){
+        for(auto& c : children_){
+            if(c->removeChild(child)){
+                return true;
+            }
+        }
+    }
+    else{
+        (*child_iter)->parent_ = nullptr;
+        children_.erase(child_iter);
+        return true;
+    }
+
+    return false;
 }

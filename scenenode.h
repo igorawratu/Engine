@@ -19,11 +19,15 @@ private:
     Eigen::Vector3f scale_;
 
 private:
+    //forwards SceneNode, its components, and its children by a frame
     void frame(const Eigen::Affine3f& parent_world_transform_);
 
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    //Please note: DO NOT call make_shared with SceneNode. This is because make_shared does not call the new operator, thus SceneNode will not be
+    //aligned, and Eigen will most likely fail the aligned assertion.
     SceneNode();
-    SceneNode(std::string name, SceneNode* parent);
+    SceneNode(std::string name);
     SceneNode(const SceneNode& other) = default;
     ~SceneNode();
 
@@ -32,6 +36,12 @@ public:
      * @return a string containing the name
      */
     std::string name();
+
+    /**
+     * @brief Sets name of SceneNode to /p nme
+     * @param name name to set SceneNode to
+     */
+    void name(std::string nme);
 
     /**
      * @brief Calculates world transform of the SceneNode
@@ -100,14 +110,21 @@ public:
     void addChild(const std::shared_ptr<SceneNode>& child);
 
     /**
-     * @brief Finds the first occurence of a child with the specified /p name. All descendents are searched, using depth first
+     * @brief Removes the specified child from the scene node. Searches all descendants
+     * @param child shared pointer to the child to remove
+     * @return true if the child was removed, otherwise false
+     */
+    bool removeChild(const std::shared_ptr<SceneNode>& child);
+
+    /**
+     * @brief Finds the first occurence of a child with the specified /p name. All descendants are searched, using depth first
      * @param name Name of the child to find
      * @return a shared pointer to the first descedant with the given name
      */
     std::shared_ptr<SceneNode> findChild(const std::string& name);
 
     /**
-     * @brief Finds all descendents with the given /p name. Search is performed depth first, with the children being in that order.
+     * @brief Finds all descendants with the given /p name. Search is performed depth first, with the children being in that order.
      * @param name Name of the children to find
      * @return a list of shared pointers to all the children with the given name
      */
