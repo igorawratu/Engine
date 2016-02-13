@@ -1,10 +1,11 @@
 #include "scenenode.h"
+#include <type_traits>
 
 SceneNode::SceneNode() : SceneNode("Nameless"){
 }
 
 SceneNode::SceneNode(std::string name) : parent_(nullptr), name_(name), rotation_(Eigen::Quaternion<float>::Identity()),
-                                         translation_(0.f, 0.f, 0.f), scale_(1.f, 1.f, 1.f){
+                                         translation_(0.f, 0.f, 0.f), scale_(1.f, 1.f, 1.f), components_sorted_(true){
 }
 
 SceneNode::~SceneNode(){
@@ -99,12 +100,25 @@ bool SceneNode::findChildByPointer(const std::shared_ptr<SceneNode>& child){
     return false;
 }
 
-void SceneNode::frame(const Eigen::Affine3f& parent_world_transform_){
-    //frame logic for components
+void SceneNode::frame(const Eigen::Affine3f& parent_world_transform){
+    if(!components_sorted_){
+        components_.sort([](const std::unique_ptr<Component>& first, const std::unique_ptr<Component>& second){return first->priority_ < second->priority_;});
+    }
 
-    auto transform = worldTransform();
+    if(!components_.empty()){
+        for(auto iter = components_.begin(); iter != components_.end(); ++iter){
+            (**iter).frameStart();
+        }
+
+        for(auto iter = components_.rbegin(); iter != components_.rend(); ++iter){
+            (**iter).frameEnd();
+        }
+    }
+
+    auto transform = Eigen::Translation3f(translation_) * rotation_ * Eigen::Scaling(scale_);
+    auto world = parent_world_transform * transform;
     for(auto& child : children_){
-        child->frame(transform);
+        child->frame(world);
     }
 }
 
@@ -143,4 +157,53 @@ bool SceneNode::removeChild(const std::shared_ptr<SceneNode>& child){
     }
 
     return false;
+}
+
+void SceneNode::addComponent(std::unique_ptr<Component>&& component){
+    component->startup();
+    components_.push_back(std::move(component));
+
+    components_sorted_ = false;
+}
+
+void SceneNode::removeComponent(Component* component){
+    component->shutdown();
+    auto iter_pos = std::find_if(components_.begin(), components_.end(),
+                                 [&component](const std::unique_ptr<Component>& val){return component == val.get();});
+
+    if(iter_pos != components_.end()){
+        components_.erase(iter_pos);
+    }
+}
+
+template<typename ComponentType>
+Component* SceneNode::getComponent(){
+    static_assert(std::is_base_of<Component, ComponentType>::value, "ComponentType passed to SceneNode getComponent() is not subclass of Component");
+
+    for(auto& component : components_){
+        ComponentType* sub = dynamic_cast<ComponentType*>(component.get());
+
+        if(sub != nullptr){
+            return sub;
+        }
+    }
+
+    return nullptr;
+}
+
+template<typename ComponentType>
+std::vector<Component*> SceneNode::getComponents(){
+    static_assert(std::is_base_of<Component, ComponentType>::value, "ComponentType passed to SceneNode getComponents() is not subclass of Component");
+
+    std::vector<Component*> out;
+
+    for(auto& component : components_){
+        ComponentType* sub = dynamic_cast<ComponentType*>(component.get());
+
+        if(sub != nullptr){
+            out.push_back(component.get());
+        }
+    }
+
+    return out;
 }

@@ -6,6 +6,7 @@
 #include <string>
 #include <list>
 #include "component.h"
+#include <vector>
 
 class SceneNode
 {
@@ -20,9 +21,11 @@ private:
     Eigen::Vector3f translation_;
     Eigen::Vector3f scale_;
 
+    bool components_sorted_;
+
 private:
     //forwards SceneNode, its components, and its children by a frame
-    void frame(const Eigen::Affine3f& parent_world_transform_);
+    void frame(const Eigen::Affine3f& parent_world_transform);
     //adds child
     void addChild(const std::shared_ptr<SceneNode>& child);
     //removes given child
@@ -129,6 +132,16 @@ public:
      * @return true if \p child was found, else false
      */
     bool findChildByPointer(const std::shared_ptr<SceneNode>& child);
+
+    void addComponent(std::unique_ptr<Component>&& component);
+
+    void removeComponent(Component* component);
+
+    template<typename ComponentType>
+    Component* getComponent();
+
+    template<typename ComponentType>
+    std::vector<Component*> getComponents();
 };
 
 #endif // SCENENODE_H
