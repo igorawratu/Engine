@@ -5,6 +5,9 @@
 #include <SDL_opengl.h>
 
 #include <string>
+#include <memory>
+
+#include "scene.h"
 
 const int CENTER_WINDOW_POS = -1;
 const int UNDEFINED_WINDOW_POS = -2;
@@ -15,6 +18,8 @@ friend class Engine;
 private:
     SDL_Window* window_;
     SDL_GLContext context_;
+
+    std::shared_ptr<Scene> current_scene_;
 
 private:
     //forwards window by a frame, the main point of this function is to just swap buffers, so this would get called at the end of the
@@ -113,6 +118,12 @@ public:
      * @param height The new height of the window
      */
     void resizeWindow(int width, int height);
+
+    /**
+     * @brief Sets the scene to be rendered to the window
+     * @param scene Scene to be rendered
+     */
+    void setCurrentScene(std::shared_ptr<Scene> scene);
 };
 
 #endif // WINDOW_H

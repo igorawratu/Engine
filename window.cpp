@@ -2,7 +2,7 @@
 #include <iostream>
 
 Window::Window(std::string title, int width, int height, int x_pos, int y_pos, bool maximized,
-       bool fullscreen, bool resizable, bool focus){
+       bool fullscreen, bool resizable, bool focus) : current_scene_(nullptr){
     assert(width >= 0 && height >= 0);
 
     Uint32 flags = SDL_WINDOW_OPENGL;
@@ -162,5 +162,16 @@ void Window::resizeWindow(int width, int height){
 }
 
 void Window::frame(){
-    SDL_GL_SwapWindow(window_);
+    if(current_scene_ != nullptr){
+        SDL_GLContext current_context = SDL_GL_GetCurrentContext();
+        if(current_context != context_){
+            makeCurrent();
+        }
+        current_scene_->frame();
+        SDL_GL_SwapWindow(window_);
+    }
+}
+
+void Window::setCurrentScene(std::shared_ptr<Scene> scene){
+    current_scene_ = scene;
 }

@@ -15,7 +15,7 @@ bool checkSDLErrors(int code, std::string message){
 
 std::unique_ptr<Engine> Engine::engine_ = nullptr;
 
-Engine::Engine() : initialized_(false) {
+Engine::Engine() : initialized_(false){
 }
 
 Engine::~Engine(){
@@ -146,6 +146,10 @@ bool Engine::initVertDat(){
 
 bool Engine::run(){
     while(!event_handler_->isQuit()){
+        if(windows_.size() == 0){
+            break;
+        }
+
         timer_->frame();
         event_handler_->frame();
 
@@ -163,14 +167,13 @@ bool Engine::run(){
             windows_.erase(id);
         }
 
-
-        glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(program_);
-        glBindVertexArray(vao_);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_buffer_);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
-        glBindVertexArray(0);
-        glUseProgram(0);
+//        glClear(GL_COLOR_BUFFER_BIT);
+//        glUseProgram(program_);
+//        glBindVertexArray(vao_);
+//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_buffer_);
+//        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
+//        glBindVertexArray(0);
+//        glUseProgram(0);
 
         for(auto& window_pair : windows_){
             Window* window = window_pair.second.get();

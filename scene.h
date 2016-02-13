@@ -6,7 +6,7 @@
 
 class Scene
 {
-friend class Engine;
+friend class Window;
 private:
     std::shared_ptr<SceneNode> root_;
 

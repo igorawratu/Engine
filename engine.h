@@ -28,14 +28,13 @@ private:
 
     bool initialized_;
 
-    std::unordered_map<Uint32, std::unique_ptr<Window>> windows_;
+    std::unordered_map<Uint32, std::unique_ptr<Window> > windows_;
 
     GLuint program_;
     GLint vert_location_;
     GLuint vert_buffer_;
     GLuint idx_buffer_;
     GLuint vao_;
-
 
 private:
     Engine();
