@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <list>
+#include "component.h"
 
 class SceneNode
 {
@@ -12,6 +13,7 @@ friend class Scene;
 private:
     SceneNode* parent_;
     std::list<std::shared_ptr<SceneNode> > children_;
+    std::list<std::unique_ptr<Component> > components_;
     std::string name_;
 
     Eigen::Quaternion<float> rotation_;
