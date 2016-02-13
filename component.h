@@ -3,11 +3,14 @@
 
 #include <limits>
 
+class SceneNode;
+
 class Component
 {
 friend class SceneNode;
 protected:
     unsigned int priority_;
+    SceneNode* owner_;
 
 protected:
     virtual void frameStart() = 0;
@@ -16,7 +19,7 @@ protected:
     virtual void shutdown() = 0;
 
 public:
-    Component() : priority_(std::numeric_limits<unsigned int>::max()){
+    Component() : priority_(std::numeric_limits<unsigned int>::max()), owner_(nullptr){
     }
 };
 

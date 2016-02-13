@@ -160,6 +160,7 @@ bool SceneNode::removeChild(const std::shared_ptr<SceneNode>& child){
 }
 
 void SceneNode::addComponent(std::unique_ptr<Component>&& component){
+    component->owner_ = this;
     component->startup();
     components_.push_back(std::move(component));
 
