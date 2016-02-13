@@ -84,6 +84,21 @@ std::shared_ptr<SceneNode> SceneNode::findChild(const std::string& name){
     return nullptr;
 }
 
+bool SceneNode::findChildByPointer(const std::shared_ptr<SceneNode>& child){
+    for(auto& c : children_){
+        if(c == child){
+            return true;
+        }
+
+        bool c_desc = child->findChildByPointer(child);
+        if(c_desc){
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void SceneNode::frame(const Eigen::Affine3f& parent_world_transform_){
     //frame logic for components
 
