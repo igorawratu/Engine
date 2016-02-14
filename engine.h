@@ -1,13 +1,7 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#define GLEW_STATIC
-#define NO_SDL_GLEXT
-
-#include <SDL.h>
-#include <GL/glew.h>
-#include <SDL_opengl.h>
-#include <GL/glu.h>
+#include "common.h"
 
 #include <memory>
 #include <unordered_map>
