@@ -133,13 +133,27 @@ public:
      */
     bool findChildByPointer(const std::shared_ptr<SceneNode>& child);
 
+    /**
+     * @brief Adds /p component to the SceneNode
+     * @param component Component to be added
+     */
     void addComponent(std::unique_ptr<Component>&& component);
 
+    /**
+     * @brief Removes component /p component from the SceneNode
+     * @param component Component to be removed
+     */
     void removeComponent(Component* component);
 
+    /**
+     * @brief Gets first component of ComponentType
+     */
     template<typename ComponentType>
     Component* getComponent();
 
+    /**
+     * @brief Gets all components of ComponentType
+     */
     template<typename ComponentType>
     std::vector<Component*> getComponents();
 };
