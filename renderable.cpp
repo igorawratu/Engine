@@ -1,7 +1,7 @@
 #include "renderable.h"
 
 void Renderable::frameStart(){
-    glUseProgram(material->getShader()->getProgram());
+    glUseProgram(material_->getShader()->getProgram());
 
     glBindVertexArray(vao_name_);
     glBindBuffer(GL_ARRAY_BUFFER, mesh_->getVBO());
@@ -33,31 +33,31 @@ Renderable::Renderable(std::unique_ptr<Material>&& mat, Mesh* mesh) : material_(
         throw RenderableError("Mesh VBO or IBO not initialized");
     }
 
-    glGenVertexArrays(1, &vao_);
-    glBindVertexArray(vao_);
+    glGenVertexArrays(1, &vao_name_);
+    glBindVertexArray(vao_name_);
 
     if(material_->getPositionLocation() >= 0){
         GLuint loc = (GLuint)mat->getPositionLocation();
         glEnableVertexAttribArray(loc);
-        glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), offsetof(VertexData, position));
+        glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), (GLvoid*)offsetof(VertexData, position));
     }
 
     if(material_->getTexcoordLocation() >= 0){
         GLuint loc = (GLuint)mat->getTexcoordLocation();
         glEnableVertexAttribArray(loc);
-        glVertexAttribPointer(loc, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), offsetof(VertexData, texturecoord));
+        glVertexAttribPointer(loc, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (GLvoid*)offsetof(VertexData, texturecoord));
     }
 
     if(material_->getColourLocation() >= 0){
         GLuint loc = (GLuint)mat->getColourLocation();
         glEnableVertexAttribArray(loc);
-        glVertexAttribPointer(loc, 4, GL_FLOAT, GL_FALSE, sizeof(VertexData), offsetof(VertexData, colour));
+        glVertexAttribPointer(loc, 4, GL_FLOAT, GL_FALSE, sizeof(VertexData), (GLvoid*)offsetof(VertexData, colour));
     }
 
     if(material_->getNormalLocation() >= 0){
         GLuint loc = (GLuint)mat->getNormalLocation();
         glEnableVertexAttribArray(loc);
-        glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), offsetof(VertexData, normal));
+        glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), (GLvoid*)offsetof(VertexData, normal));
     }
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh_ibo);
@@ -69,11 +69,11 @@ Renderable::Renderable(std::unique_ptr<Material>&& mat, Mesh* mesh) : material_(
 Renderable::Renderable(std::unique_ptr<Material>&& mat, Mesh* mesh, GLuint vao_name) : material_(std::move(mat)), mesh_(mesh), vao_name_(vao_name){
 }
 
-Renderable::Renderable(const Renderable& other) : material_(new Material(*other.material)), mesh_(other.mesh_), vao_name_(other.vao_name_){
+Renderable::Renderable(const Renderable& other) : material_(std::move(other.material_->clone())), mesh_(other.mesh_), vao_name_(other.vao_name_){
 }
 
 Renderable& Renderable::operator = (const Renderable& other){
-    material_ = std::unique_ptr<Material>(other.material_);
+    material_ = std::move(other.material_->clone());
     mesh_ = other.mesh_;
     vao_name_ = other.vao_name_;
 

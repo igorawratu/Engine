@@ -44,8 +44,22 @@ public:
     Renderable& operator = (const Renderable& other);
     ~Renderable();
 
+    /**
+     * @brief Gets observer pointer to the Renderable's material
+     * @return a pointer to the Renderable's material
+     */
     Material* getMaterial();
+
+    /**
+     * @brief Gets an observer pointer to the Renderable's mesh
+     * @return a pointer to the Renderable's mesh
+     */
     Mesh* getMesh();
+
+    /**
+     * @brief Gets the vao name of the renderable
+     * @return a GLuint containing the name of the Renderable's vao
+     */
     GLuint getVAOName();
 };
 
