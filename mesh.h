@@ -9,7 +9,7 @@
 struct VertexData{
     GLfloat position[3];
     GLfloat normal[3];
-    GLfloat colour[3];
+    GLfloat colour[4];
     GLfloat texturecoord[2];
 };
 

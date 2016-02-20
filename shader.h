@@ -24,12 +24,13 @@ class Shader
 friend class ShaderManager;
 private:
     std::uint32_t id_;
+    std::string name_;
 
     GLuint program_;
 
 private:
     //only callable by ShaderManager
-    Shader(std::uint32_t id, const std::string& vs, const std::string& fs);
+    Shader(const std::string& name, std::uint32_t id, const std::string& vs, const std::string& fs);
     //trhwos ShaderCompileError if compilation or linking fails
     void initializeShader(const std::string& vs, const std::string& fs);
     //helper for initializeShader
@@ -51,6 +52,14 @@ public:
      * @return
      */
     GLuint getProgram();
+
+    /**
+     * @brief Gets assigned name of shader
+     * @return string containing shader name
+     */
+    std::string getShaderName(){
+        return name_;
+    }
 };
 
 #endif // SHADER_H
