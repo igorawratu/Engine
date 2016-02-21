@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 
 struct VertexData{
     GLfloat position[3];
@@ -37,8 +38,10 @@ private:
     size_t num_indices_;
     size_t num_vertices_;
 
+    std::string lexical_name_;
+
 private:
-    Mesh(std::uint32_t id, MeshCacheOption cache_option = DELETE_ON_BUFFER_CREATION);
+    Mesh(const std::string& lexical_name, std::uint32_t id, MeshCacheOption cache_option = DELETE_ON_BUFFER_CREATION);
 
     void initializeBuffers();
 
@@ -101,6 +104,12 @@ public:
      * @return size_t indicating number of unique vertices
      */
     size_t getNumVertices();
+
+    /**
+     * @brief Gets the lexical name of the mesh
+     * @return a string containing the lexical name of the mesh
+     */
+    std::string getLexicalName();
 };
 
 #endif // MESH_H

@@ -1,6 +1,6 @@
 #include "shader.h"
 
-Shader::Shader(std::uint32_t id, const std::string& vs, const std::string& fs) : id_(id), program_(0){
+Shader::Shader(const std::string& lexical_name, std::uint32_t id, const std::string& vs, const std::string& fs) : id_(id), program_(0), lexical_name_(lexical_name){
     initializeShader(vs, fs);
 }
 
@@ -68,4 +68,8 @@ Shader::~Shader(){
     if(program_ != 0){
         glDeleteProgram(program_);
     }
+}
+
+std::string Shader::getLexicalName(){
+    return lexical_name_;
 }

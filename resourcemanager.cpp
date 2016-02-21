@@ -1,5 +1,31 @@
 #include "resourcemanager.h"
 
+std::unique_ptr<ResourceManager> ResourceManager::resource_manager_ = nullptr;
+
+ResourceManager* ResourceManager::resourceManager(){
+    return ResourceManager::resource_manager_.get();
+}
+
+bool ResourceManager::initialize(){
+    if(resource_manager_ != nullptr){
+        return false;
+    }
+
+    ResourceManager::resource_manager_ = std::unique_ptr<ResourceManager>(new ResourceManager);
+
+    return true;
+}
+
+bool ResourceManager::shutdown(){
+    if(resource_manager_ == nullptr){
+        return false;
+    }
+
+    ResourceManager::resource_manager_ = nullptr;
+
+    return true;
+}
+
 ResourceManager::ResourceManager() : mesh_id_counter_(0), shader_id_counter_(0){
 
 }
@@ -8,15 +34,23 @@ ResourceManager::~ResourceManager(){
 
 }
 
-Mesh* ResourceManager::createMesh(std::unique_ptr<std::vector<VertexData> >&& vertices, std::unique_ptr<std::vector<GLuint> >&& indices,
+Mesh* ResourceManager::createMesh(const std::string& lexical_name, std::unique_ptr<std::vector<VertexData> >&& vertices, std::unique_ptr<std::vector<GLuint> >&& indices,
                               MeshCacheOption cache_options){
+    if(mesh_lexical_names_.find(lexical_name) != mesh_lexical_names_.end()){
+        std::cerr << "Error: Mesh lexical names must not be duplicate" << std::endl;
+
+        return nullptr;
+    }
+
     std::uint32_t mesh_id = mesh_id_counter_++;
 
-    meshes_[mesh_id] = std::unique_ptr<Mesh>(new Mesh(mesh_id, cache_options));
+    meshes_[mesh_id] = std::unique_ptr<Mesh>(new Mesh(lexical_name, mesh_id, cache_options));
 
     if(vertices != nullptr && indices != nullptr){
         meshes_[mesh_id]->setMeshData(std::move(vertices), std::move(indices));
     }
+
+    mesh_lexical_names_[lexical_name] = mesh_id;
 
     return meshes_[mesh_id].get();
 }
@@ -30,9 +64,23 @@ Mesh* ResourceManager::getMesh(const std::uint32_t& id){
     }
 }
 
+Mesh* ResourceManager::getMesh(const std::string& lexical_name){
+    if(mesh_lexical_names_.find(lexical_name) != mesh_lexical_names_.end()){
+        std::uint32_t id = mesh_lexical_names_[lexical_name];
+        return meshes_[id].get();
+    }
+    else{
+        return nullptr;
+    }
+}
+
 bool ResourceManager::freeMesh(const std::uint32_t& id){
     if(meshes_.find(id) != meshes_.end()){
+        std::string lexical_name = meshes_[id]->getLexicalName();
+
         meshes_.erase(id);
+        mesh_lexical_names_.erase(lexical_name);
+
         return true;
     }
     else{
@@ -40,7 +88,11 @@ bool ResourceManager::freeMesh(const std::uint32_t& id){
     }
 }
 
-Shader* ResourceManager::createShader(const std::string& vs, const std::string& fs, ShaderDataType data_type){
+Shader* ResourceManager::createShader(const std::string& lexical_name, const std::string& vs, const std::string& fs, ShaderDataType data_type){
+    if(shader_lexical_names_.find(lexical_name) != shader_lexical_names_.end()){
+        std::cerr << "Error: Shader lexical names must not be duplicate" << std::endl;
+        return nullptr;
+    }
     std::uint32_t id = shader_id_counter_++;
 
     if(data_type == SHADER_FILE){
@@ -66,7 +118,7 @@ Shader* ResourceManager::createShader(const std::string& vs, const std::string& 
 
         std::unique_ptr<Shader> shader;
         try{
-            shader = std::unique_ptr<Shader>(new Shader(id, vs_dat, fs_dat));
+            shader = std::unique_ptr<Shader>(new Shader(lexical_name, id, vs_dat, fs_dat));
         }
         catch(ShaderCompileError e){
             std::cerr << "Error: " << e.what() << std::endl;
@@ -78,7 +130,7 @@ Shader* ResourceManager::createShader(const std::string& vs, const std::string& 
     else{
         std::unique_ptr<Shader> shader;
         try{
-            shader = std::unique_ptr<Shader>(new Shader(id, vs, fs));
+            shader = std::unique_ptr<Shader>(new Shader(lexical_name, id, vs, fs));
         }
         catch(ShaderCompileError e){
             std::cerr << "Error: " << e.what() << std::endl;
@@ -87,6 +139,8 @@ Shader* ResourceManager::createShader(const std::string& vs, const std::string& 
 
         shaders_[id] = std::move(shader);
     }
+
+    shader_lexical_names_[lexical_name] = id;
 }
 
 Shader* ResourceManager::getShader(const std::uint32_t& id){
@@ -98,8 +152,21 @@ Shader* ResourceManager::getShader(const std::uint32_t& id){
     }
 }
 
+Shader* ResourceManager::getShader(const std::string& lexical_name){
+    if(shader_lexical_names_.find(lexical_name) != shader_lexical_names_.end()){
+        std::uint32_t id = shader_lexical_names_[lexical_name];
+
+        return shaders_[id].get();
+    }
+    else{
+        return nullptr;
+    }
+}
+
 bool ResourceManager::freeShader(const std::uint32_t& id){
     if(shaders_.find(id) != shaders_.end()){
+        std::string lexical_name = shaders_[id]->getLexicalName();
+        shader_lexical_names_.erase(lexical_name);
         shaders_.erase(id);
         return true;
     }
@@ -116,11 +183,11 @@ std::unique_ptr<Renderable> ResourceManager::createRenderable(std::unique_ptr<Ma
 
     std::uint64_t hash = (shader_id << 32) | mesh_id;
 
-    if(existing_vaos_.find(hash)){
+    if(existing_vaos_.find(hash) != existing_vaos_.end()){
         GLuint vao_name = existing_vaos_[hash];
 
         try{
-            return std::unique_ptr<Renderable>(std::move(mat), mesh, vao_name);
+            return std::unique_ptr<Renderable>(new Renderable(std::move(mat), mesh, vao_name));
         }
         catch(RenderableError e){
             std::cerr << e.what() << std::endl;

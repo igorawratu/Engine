@@ -9,6 +9,7 @@
 #include "eventhandler.h"
 #include "timer.h"
 #include "window.h"
+#include "resourcemanager.h"
 
 class Engine
 {
@@ -31,10 +32,6 @@ private:
     Engine();
     Engine(const Engine& other) = delete;
     ~Engine();
-
-    bool initShaders();
-    bool initVertDat();
-    void render();
 
 public:
     static Engine* engine();

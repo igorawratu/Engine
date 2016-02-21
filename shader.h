@@ -27,9 +27,11 @@ private:
 
     GLuint program_;
 
+    std::string lexical_name_;
+
 private:
     //only callable by ShaderManager
-    Shader(std::uint32_t id, const std::string& vs, const std::string& fs);
+    Shader(const std::string& lexical_name, std::uint32_t id, const std::string& vs, const std::string& fs);
     //trhwos ShaderCompileError if compilation or linking fails
     void initializeShader(const std::string& vs, const std::string& fs);
     //helper for initializeShader
@@ -52,6 +54,12 @@ public:
      * @return
      */
     GLuint getProgram();
+
+    /**
+     * @brief Gets the lexical name of the shader
+     * @return a string containing the lexical name of the shader
+     */
+    std::string getLexicalName();
 };
 
 #endif // SHADER_H

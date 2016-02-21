@@ -1,8 +1,8 @@
 #include "mesh.h"
 
-Mesh::Mesh(std::uint32_t id, MeshCacheOption cache_option) : id_(id), vbo_name_(0), ibo_name_(0), indices_(nullptr),
-                                                                        vertices_(nullptr), cache_option_(cache_option),
-                                                                        initialized_(false){
+Mesh::Mesh(const std::string& lexical_name, std::uint32_t id, MeshCacheOption cache_option) :  id_(id), vbo_name_(0), ibo_name_(0), indices_(nullptr),
+                                                                                        vertices_(nullptr), cache_option_(cache_option),
+                                                                                        initialized_(false), lexical_name_(lexical_name){
 }
 
 Mesh::~Mesh(){
@@ -43,8 +43,16 @@ GLuint Mesh::getIBO(){
     return ibo_name_;
 }
 
+std::uint32_t Mesh::getID(){
+    return id_;
+}
+
 std::vector<GLuint>* Mesh::getIndices(){
     return indices_.get();
+}
+
+std::string Mesh::getLexicalName(){
+    return lexical_name_;
 }
 
 std::vector<VertexData>* Mesh::getVertices(){
