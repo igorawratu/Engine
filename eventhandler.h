@@ -7,6 +7,7 @@
 #include <tuple>
 
 class EventHandler{
+friend std::unique_ptr<EventHandler>::deleter_type;
 friend class Engine;
 private:
     bool quit_;
@@ -29,6 +30,8 @@ private:
     bool mouse_moved_;
     std::pair<int, int> mouse_position_;
     std::pair<int, int> mouse_relative_motion_;
+
+    static std::unique_ptr<EventHandler> event_handler_;
 
 private:
     //forwards event handler by 1 frame
@@ -69,11 +72,20 @@ private:
     //helper for mouse button states
     std::tuple<bool, int, int, int> isMouseBtnStatus(const Uint8& btn,const MouseClickedState& state);
 
-public:
     EventHandler();
     //not allowed to copy
     EventHandler(const EventHandler&) = delete;
     ~EventHandler();
+
+    static bool initialize();
+    static bool shutdown();
+
+public:
+    /**
+     * @brief Gets an observer pointer to the Singleton event handler
+     * @return observer pointer to the event handler, or nullptr of engine has not been initialized
+     */
+    static EventHandler* eventHandler();
 
     /**
      * @brief Checks if the quit event has been received

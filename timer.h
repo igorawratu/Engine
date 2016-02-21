@@ -2,9 +2,12 @@
 #define TIMER
 
 #include <SDL.h>
+#include <memory>
 
 class Timer{
 friend class Engine;
+friend std::unique_ptr<Timer>::deleter_type;
+
 private:
     int total_time_elapsed_ms_;
     int actual_time_elapsed_ms_;
@@ -18,7 +21,16 @@ private:
 
     bool paused_;
 
+    static std::unique_ptr<Timer> timer_;
+
 private:
+    Timer();
+    Timer(const Timer& other);
+    ~Timer();
+
+    static bool initialize();
+    static bool shutdown();
+
     //forwards timer by a frame
     void frame();
 
@@ -26,9 +38,11 @@ private:
     float toSeconds(int ms);
 
 public:
-    Timer();
-    Timer(const Timer& other);
-    ~Timer();
+    /**
+     * @brief Gets an observer pointer to the singleton timer
+     * @return observer pointer to timer, or nullptr if engine has not been initialized
+     */
+    static Timer* timer();
 
     /**
      * @brief Calculates the time since the last frame

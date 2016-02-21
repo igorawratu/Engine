@@ -2,6 +2,32 @@
 #include <list>
 #include <iostream>
 
+std::unique_ptr<EventHandler> EventHandler::event_handler_ = nullptr;
+
+EventHandler* EventHandler::eventHandler(){
+    return EventHandler::event_handler_.get();
+}
+
+bool EventHandler::initialize(){
+    if(EventHandler::event_handler_ != nullptr){
+        return false;
+    }
+
+    EventHandler::event_handler_ = std::unique_ptr<EventHandler>(new EventHandler());
+
+    return true;
+}
+
+bool EventHandler::shutdown(){
+    if(EventHandler::event_handler_ == nullptr){
+        return false;
+    }
+
+    EventHandler::event_handler_ = nullptr;
+
+    return true;
+}
+
 EventHandler::EventHandler() : mouse_position_(0, 0), mouse_relative_motion_(0, 0), mouse_moved_(false), mouse_wheel_movement_(0, 0), quit_(false){
 }
 

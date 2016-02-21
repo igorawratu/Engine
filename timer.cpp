@@ -1,6 +1,32 @@
 #include "timer.h"
 #include <iostream>
 
+std::unique_ptr<Timer> Timer::timer_ = nullptr;
+
+bool Timer::initialize(){
+    if(Timer::timer_ != nullptr){
+        return false;
+    }
+
+    Timer::timer_ = std::unique_ptr<Timer>(new Timer());
+
+    return true;
+}
+
+bool Timer::shutdown(){
+    if(Timer::timer_ == nullptr){
+        return false;
+    }
+
+    Timer::timer_ = nullptr;
+
+    return true;
+}
+
+Timer* Timer::timer(){
+    return Timer::timer_.get();
+}
+
 Timer::Timer() : total_time_elapsed_ms_(SDL_GetTicks()), actual_time_elapsed_ms_(0),
                 paused_time_ms_(0), time_since_last_frame_ms_(0),
                 total_time_elapsed_(toSeconds(total_time_elapsed_ms_)),

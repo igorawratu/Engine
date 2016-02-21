@@ -21,7 +21,7 @@ enum MeshCacheOption{DELETE_ON_BUFFER_CREATION, CACHE};
 
 class Mesh
 {
-friend class MeshManager;
+friend class ResourceManager;
 private:
     std::uint32_t id_;
     GLuint vbo_name_;
@@ -33,6 +33,9 @@ private:
     MeshCacheOption cache_option_;
 
     bool initialized_;
+
+    size_t num_indices_;
+    size_t num_vertices_;
 
 private:
     Mesh(std::uint32_t id, MeshCacheOption cache_option = DELETE_ON_BUFFER_CREATION);
@@ -86,6 +89,18 @@ public:
      * @return id of the mesh.
      */
     std::uint32_t getID();
+
+    /**
+     * @brief Gets number of elements to be drawn for this mesh
+     * @return size_t containing number of elements to be drawn
+     */
+    size_t getNumIndices();
+
+    /**
+     * @brief Gets number of unique vertices in this mesh
+     * @return size_t indicating number of unique vertices
+     */
+    size_t getNumVertices();
 };
 
 #endif // MESH_H

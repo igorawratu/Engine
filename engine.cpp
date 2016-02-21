@@ -56,8 +56,8 @@ bool Engine::startup(){
         return false;
     }
 
-    timer_ = std::unique_ptr<Timer>(new Timer());
-    event_handler_ = std::unique_ptr<EventHandler>(new EventHandler());
+    Timer::initialize();
+    EventHandler::initialize();
 
     glClearColor(0.f, 0.f, 0.f, 1.f);
 
@@ -145,20 +145,23 @@ bool Engine::initVertDat(){
 }
 
 bool Engine::run(){
-    while(!event_handler_->isQuit()){
+    EventHandler* event_handler = EventHandler::eventHandler();
+    Timer* timer = Timer::timer();
+
+    while(!event_handler->isQuit()){
         if(windows_.size() == 0){
             break;
         }
 
-        timer_->frame();
-        event_handler_->frame();
+        timer->frame();
+        event_handler->frame();
 
         std::list<Uint32> windows_to_destroy;
 
         for(auto& window_pair : windows_){
             Uint32 id = window_pair.first;
 
-            if(event_handler_->windowClosed(id)){
+            if(event_handler->windowClosed(id)){
                 windows_to_destroy.push_back(id);
             }
         }
@@ -184,22 +187,14 @@ bool Engine::run(){
 }
 
 bool Engine::shutdown(){
-    timer_ = nullptr;
-    event_handler_ = nullptr;
+    Timer::shutdown();
+    EventHandler::shutdown();
 
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 
     SDL_Quit();
 
     return true;
-}
-
-Timer* Engine::timer(){
-    return timer_.get();
-}
-
-EventHandler* Engine::eventHandler(){
-    return event_handler_.get();
 }
 
 Window* Engine::windowByID(Uint32 windowID){

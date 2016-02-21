@@ -1,6 +1,6 @@
 #include "shader.h"
 
-Shader::Shader(const std::string& name, std::uint32_t id, const std::string& vs, const std::string& fs) : id_(id), name_(name), program_(0){
+Shader::Shader(std::uint32_t id, const std::string& vs, const std::string& fs) : id_(id), program_(0){
     initializeShader(vs, fs);
 }
 
@@ -62,4 +62,10 @@ std::string Shader::queryShaderErrorMsg(GLuint name){
     std::string msg(info_log);
 
     return msg;
+}
+
+Shader::~Shader(){
+    if(program_ != 0){
+        glDeleteProgram(program_);
+    }
 }

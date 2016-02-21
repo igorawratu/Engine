@@ -6,7 +6,7 @@ void Renderable::frameStart(){
     glBindVertexArray(vao_name_);
     glBindBuffer(GL_ARRAY_BUFFER, mesh_->getVBO());
 
-    glDrawElements(GL_TRIANGLES, mesh_->getVertices()->size(), GL_UNSIGNED_INT, NULL);
+    glDrawElements(GL_TRIANGLES, mesh_->getNumIndices(), GL_UNSIGNED_INT, NULL);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

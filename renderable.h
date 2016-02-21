@@ -25,10 +25,17 @@ public:
 
 class Renderable : public Component
 {
+friend class ResourceManager;
+
 private:
     GLuint vao_name_;
     std::unique_ptr<Material> material_;
     Mesh* mesh_;
+
+private:
+    Renderable() = delete;
+    Renderable(std::unique_ptr<Material>&& mat, Mesh* mesh);
+    Renderable(std::unique_ptr<Material>&& mat, Mesh* mesh, GLuint vao_name);
 
 protected:
     virtual void frameStart();
@@ -37,9 +44,6 @@ protected:
     virtual void shutdown();
 
 public:
-    Renderable() = delete;
-    Renderable(std::unique_ptr<Material>&& mat, Mesh* mesh);
-    Renderable(std::unique_ptr<Material>&& mat, Mesh* mesh, GLuint vao_name);
     Renderable(const Renderable& other);
     Renderable& operator = (const Renderable& other);
     ~Renderable();

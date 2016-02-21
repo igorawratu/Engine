@@ -59,6 +59,9 @@ bool Mesh::setMeshData(std::unique_ptr<std::vector<VertexData> >&& vertices, std
     vertices_ = std::move(vertices);
     indices_ = std::move(indices);
 
+    num_indices_ = indices_->size();
+    num_vertices_ = vertices->size();
+
     return true;
 }
 
@@ -82,4 +85,12 @@ void Mesh::initializeBuffers(){
     }
 
     initialized_ = true;
+}
+
+size_t Mesh::getNumIndices(){
+    return num_indices_;
+}
+
+size_t Mesh::getNumVertices(){
+    return num_vertices_;
 }
