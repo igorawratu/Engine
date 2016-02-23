@@ -11,11 +11,15 @@ protected:
     int texcoord_location_;
     int colour_location_;
     int normal_location_;
+    int model_mat_loc_;
+    int view_mat_loc_;
+    int proj_mat_loc_;
 
     Shader* shader_;
 
 public:
-    Material() : position_location_(-1), texcoord_location_(-1), colour_location_(-1), normal_location_(-1), shader_(nullptr){
+    Material() : position_location_(-1), texcoord_location_(-1), colour_location_(-1), normal_location_(-1), shader_(nullptr),
+                 model_mat_loc_(-1), view_mat_loc_(-1), proj_mat_loc_(-1){
 
     }
 
@@ -61,6 +65,30 @@ public:
      */
     Shader* getShader(){
         return shader_;
+    }
+
+    /**
+     * @brief Gets location of model matrix
+     * @return location of model matrix, or -1 if there is none
+     */
+    int getModelMatLocation(){
+        return model_mat_loc_;
+    }
+
+    /**
+     * @brief Gets location of view matrix
+     * @return  location of view matrix, or -1 if there is none
+     */
+    int getViewMatLocation(){
+        return view_mat_loc_;
+    }
+
+    /**
+     * @brief Gets location of projection matrix
+     * @return location of projection matrix, or -1 if there is none
+     */
+    int getProjMatLocation(){
+        return proj_mat_loc_;
     }
 
     /**
