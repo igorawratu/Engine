@@ -13,6 +13,8 @@ class SceneNode
 friend class Scene;
 private:
     SceneNode* parent_;
+    SceneNode* root_;
+
     std::list<std::shared_ptr<SceneNode> > children_;
     std::list<std::unique_ptr<Component> > components_;
     std::string name_;
@@ -26,8 +28,6 @@ private:
 private:
     //forwards SceneNode, its components, and its children by a frame
     void frame(const Eigen::Affine3f& parent_world_transform);
-    //adds child
-    void addChild(const std::shared_ptr<SceneNode>& child);
     //removes given child
     bool removeChild(const std::shared_ptr<SceneNode>& child);
 
@@ -156,6 +156,12 @@ public:
      */
     template<typename ComponentType>
     std::vector<Component*> getComponents();
+
+    /**
+     * @brief Adds the specified child to the SceneNode
+     * @param child Child node to be added
+     */
+    void addChild(const std::shared_ptr<SceneNode>& child);
 };
 
 #endif // SCENENODE_H

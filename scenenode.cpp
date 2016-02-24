@@ -4,7 +4,7 @@
 SceneNode::SceneNode() : SceneNode("Nameless"){
 }
 
-SceneNode::SceneNode(std::string name) : parent_(nullptr), name_(name), rotation_(Eigen::Quaternion<float>::Identity()),
+SceneNode::SceneNode(std::string name) : parent_(nullptr), root_(nullptr), name_(name), rotation_(Eigen::Quaternion<float>::Identity()),
                                          translation_(0.f, 0.f, 0.f), scale_(1.f, 1.f, 1.f), components_sorted_(true){
 }
 
@@ -67,6 +67,7 @@ Eigen::Vector3f SceneNode::worldTranslation(){
 
 void SceneNode::addChild(const std::shared_ptr<SceneNode>& child){
     child->parent_ = this;
+    child->root_ = root_;
     children_.push_back(child);
 }
 
