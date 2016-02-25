@@ -26,6 +26,7 @@ public:
 class Renderable : public Component
 {
 friend class ResourceManager;
+friend class Renderer;
 
 private:
     GLuint vao_name_;

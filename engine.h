@@ -20,29 +20,25 @@ private:
 
     bool initialized_;
 
-    std::unordered_map<Uint32, std::unique_ptr<Window> > windows_;
-
-    GLuint program_;
-    GLint vert_location_;
-    GLuint vert_buffer_;
-    GLuint idx_buffer_;
-    GLuint vao_;
+    std::unique_ptr<Window> window_;
 
 private:
     Engine();
     Engine(const Engine& other) = delete;
     ~Engine();
 
+    Window* createWindow(std::string title, int width, int height, int x_pos, int y_pos, bool maximized,
+                         bool fullscreen, bool resizable, bool focus);
+
 public:
     static Engine* engine();
 
-    bool startup();
+    bool startup(std::string title = "Mazz's Long Wang", int width = 0, int height = 0, int x_pos = UNDEFINED_WINDOW_POS, int y_pos = UNDEFINED_WINDOW_POS, bool maximized = true,
+                 bool fullscreen = true, bool resizable = true, bool focus = true);
     bool run();
     bool shutdown();
 
-    Window* windowByID(Uint32 windowID);
-    Window* createWindow(std::string title = "Engine", int width = 0, int height = 0, int x_pos = UNDEFINED_WINDOW_POS, int y_pos = UNDEFINED_WINDOW_POS, bool maximized = true,
-                         bool fullscreen = true, bool resizable = true, bool focus = true);
+    Window* window();
 };
 
 #endif // ENGINE_H

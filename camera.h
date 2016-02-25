@@ -2,7 +2,6 @@
 #define CAMERA_H
 
 #include "component.h"
-#include "scenenode.h"
 
 #include <Eigen/Geometry>
 #include <math.h>

@@ -1,4 +1,6 @@
 #include "camera.h"
+#include "scenenode.h"
+#include "renderer.h"
 
 Viewport::Viewport() : start(0, 0), end(0, 0){
 }
@@ -33,6 +35,7 @@ Eigen::Matrix4f Camera::calcOrthoMat(const std::pair<std::uint32_t, std::uint32_
 }
 
 void Camera::frameStart(){
+    Renderer::renderer()->addCamera(this);
 }
 
 void Camera::frameEnd(){

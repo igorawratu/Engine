@@ -102,6 +102,11 @@ public:
      * @return a unique pointer containing a copy of the current material
      */
     virtual std::unique_ptr<Material> clone() = 0;
+
+    /**
+     * @brief Binds the materials uniforms to the shader
+     */
+    virtual void bind() = 0;
 };
 
 #endif // MATERIAL_H

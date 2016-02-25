@@ -23,6 +23,7 @@ private:
     Eigen::Vector3f scale_;
 
     bool components_sorted_;
+    bool marked_for_delete_;
 
 private:
     //forwards SceneNode, its components, and its children by a frame
@@ -31,8 +32,6 @@ private:
 
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    //Please note: DO NOT call make_shared with SceneNode. This is because make_shared does not call the new operator, thus SceneNode will not be
-    //aligned, and Eigen will most likely fail the aligned assertion.
     SceneNode();
     SceneNode(std::string name);
     SceneNode(const SceneNode& other);
@@ -181,6 +180,11 @@ public:
      * @return observer pointer to the root of the current scene node
      */
     SceneNode* getRoot();
+
+    /**
+     * @brief Marks scene node for destruction, which will occur in the next frame
+     */
+    void destroy();
 };
 
 #endif // SCENENODE_H

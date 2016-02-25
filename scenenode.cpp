@@ -5,11 +5,11 @@ SceneNode::SceneNode() : SceneNode("Nameless"){
 }
 
 SceneNode::SceneNode(std::string name) : parent_(nullptr), name_(name), rotation_(Eigen::Quaternion<float>::Identity()),
-                                         translation_(0.f, 0.f, 0.f), scale_(1.f, 1.f, 1.f), components_sorted_(true){
+                                         translation_(0.f, 0.f, 0.f), scale_(1.f, 1.f, 1.f), components_sorted_(true), marked_for_delete_(false){
 }
 
 SceneNode::SceneNode(const SceneNode& other) : parent_(nullptr), name_(other.name_), rotation_(other.rotation_),
-                                    translation_(other.translation_), scale_(other.scale_), components_sorted_(other.components_sorted_){
+                                    translation_(other.translation_), scale_(other.scale_), components_sorted_(other.components_sorted_), marked_for_delete_(other.marked_for_delete_){
     for(auto& component : other.components_){
         auto c = std::move(component->clone());
         c->owner_ = this;
@@ -30,6 +30,7 @@ SceneNode& SceneNode::operator = (const SceneNode& other){
     translation_ = other.translation_;
     scale_ = other.scale_;
     components_sorted_ = other.components_sorted_;
+    marked_for_delete_ = other.marked_for_delete_;
 
     for(auto& component : other.components_){
         auto c = std::move(component->clone());
@@ -47,6 +48,13 @@ SceneNode& SceneNode::operator = (const SceneNode& other){
 }
 
 SceneNode::~SceneNode(){
+    children_.clear();
+
+    for(auto& component : components_){
+        component->shutdown();
+    }
+
+    components_.clear();
 }
 
 std::string SceneNode::name(){
@@ -272,4 +280,8 @@ SceneNode* SceneNode::getRoot(){
     }
 
     return parent_->getRoot();
+}
+
+void SceneNode::destroy(){
+    marked_for_delete_ = true;
 }

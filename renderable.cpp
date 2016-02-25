@@ -1,15 +1,8 @@
 #include "renderable.h"
+#include "renderer.h"
 
 void Renderable::frameStart(){
-    glUseProgram(material_->getShader()->getProgram());
-
-    glBindVertexArray(vao_name_);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh_->getVBO());
-
-    glDrawElements(GL_TRIANGLES, mesh_->getNumIndices(), GL_UNSIGNED_INT, NULL);
-
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    Renderer::renderer()->addRenderable(this);
 }
 
 void Renderable::frameEnd(){
