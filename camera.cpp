@@ -58,6 +58,19 @@ Camera::Camera(const Viewport& viewport, ProjectionMode proj_mode, float far, fl
     assert(far < near);
 }
 
+Camera& Camera::operator = (const Camera& other){
+    Component::operator=(other);
+    viewport_ = other.viewport_;
+    proj_mode_ = other.proj_mode_;
+    far_near_ = other.far_near_;
+    fov_ = other.fov_;
+
+    return *this;
+}
+
+Camera::Camera(const Camera& other) : Component(other), viewport_(other.viewport_), proj_mode_(other.proj_mode_), far_near_(other.far_near_), fov_(other.fov_){
+}
+
 Camera::~Camera(){
 }
 
@@ -120,4 +133,8 @@ std::pair<float, float> Camera::getFarnear(){
 
 ProjectionMode Camera::getProjectionMode(){
     return proj_mode_;
+}
+
+std::unique_ptr<Component> Camera::clone(){
+    return std::unique_ptr<Component>(new Camera(*this));
 }

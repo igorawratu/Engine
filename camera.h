@@ -41,8 +41,8 @@ protected:
 public:
     Camera();
     Camera(const Viewport& viewport, ProjectionMode proj_mode, float far, float near, float fov);
-    Camera& operator = (const Camera& other) = default;
-    Camera(const Camera& other) = default;
+    Camera& operator = (const Camera& other);
+    Camera(const Camera& other);
     ~Camera();
 
     /**
@@ -111,6 +111,8 @@ public:
      * @return projection mode
      */
     ProjectionMode getProjectionMode();
+
+    virtual std::unique_ptr<Component> clone();
 };
 
 #endif // CAMERA_H

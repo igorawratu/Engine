@@ -13,9 +13,8 @@ class SceneNode
 friend class Scene;
 private:
     SceneNode* parent_;
-    SceneNode* root_;
 
-    std::list<std::shared_ptr<SceneNode> > children_;
+    std::list<std::unique_ptr<SceneNode> > children_;
     std::list<std::unique_ptr<Component> > components_;
     std::string name_;
 
@@ -28,8 +27,7 @@ private:
 private:
     //forwards SceneNode, its components, and its children by a frame
     void frame(const Eigen::Affine3f& parent_world_transform);
-    //removes given child
-    bool removeChild(const std::shared_ptr<SceneNode>& child);
+
 
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -37,7 +35,8 @@ public:
     //aligned, and Eigen will most likely fail the aligned assertion.
     SceneNode();
     SceneNode(std::string name);
-    SceneNode(const SceneNode& other) = delete;
+    SceneNode(const SceneNode& other);
+    SceneNode& operator = (const SceneNode& other);
     ~SceneNode();
 
     /**
@@ -115,23 +114,23 @@ public:
     /**
      * @brief Finds the first occurence of a child with the specified /p name. All descendants are searched, using depth first
      * @param name Name of the child to find
-     * @return a shared pointer to the first descedant with the given name
+     * @return an observer pointer to the first descedant with the given name
      */
-    std::shared_ptr<SceneNode> findChild(const std::string& name);
+    SceneNode* findChild(const std::string& name);
 
     /**
      * @brief Finds all descendants with the given /p name. Search is performed depth first, with the children being in that order.
      * @param name Name of the children to find
-     * @return a list of shared pointers to all the children with the given name
+     * @return a list of observer pointers to all the children with the given name
      */
-    std::list<std::shared_ptr<SceneNode> > findChildren(const std::string& name);
+    std::list<SceneNode*> findChildren(const std::string& name);
 
     /**
      * @brief Searches descendants for the passed \p child
      * @param child Child to search for
      * @return true if \p child was found, else false
      */
-    bool findChildByPointer(const std::shared_ptr<SceneNode>& child);
+    bool findChildByPointer(const SceneNode* child);
 
     /**
      * @brief Adds /p component to the SceneNode
@@ -161,7 +160,21 @@ public:
      * @brief Adds the specified child to the SceneNode
      * @param child Child node to be added
      */
-    void addChild(const std::shared_ptr<SceneNode>& child);
+    void addChild(std::unique_ptr<SceneNode>&& child);
+
+    /**
+     * @brief Creates and adds a child of the given name to the current SceneNode
+     * @return an observer pointer to the added child
+     */
+    SceneNode* addChild(std::string name = "Nameless");
+
+    /**
+     * @brief Removes the child with the given pointer. Instead of deleting the child, the unique pointer containing the child is transfered to the caller.
+     * This allows the shifting around of SceneNodes without the need for copying.
+     * @param child Pointer to child to be removed
+     * @return unique_ptr containing the removed child
+     */
+    std::unique_ptr<SceneNode> removeChild(const SceneNode* child);
 };
 
 #endif // SCENENODE_H

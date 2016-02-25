@@ -4,8 +4,46 @@
 SceneNode::SceneNode() : SceneNode("Nameless"){
 }
 
-SceneNode::SceneNode(std::string name) : parent_(nullptr), root_(nullptr), name_(name), rotation_(Eigen::Quaternion<float>::Identity()),
+SceneNode::SceneNode(std::string name) : parent_(nullptr), name_(name), rotation_(Eigen::Quaternion<float>::Identity()),
                                          translation_(0.f, 0.f, 0.f), scale_(1.f, 1.f, 1.f), components_sorted_(true){
+}
+
+SceneNode::SceneNode(const SceneNode& other) : parent_(nullptr), name_(other.name_), rotation_(other.rotation_),
+                                    translation_(other.translation_), scale_(other.scale_), components_sorted_(other.components_sorted_){
+    for(auto& component : other.components_){
+        auto c = std::move(component->clone());
+        c->owner_ = this;
+        components_.push_back(std::move(c));
+    }
+
+    for(auto& child : other.children_){
+        std::unique_ptr<SceneNode> c(new SceneNode(*child));
+        c->parent_ = this;
+        children_.push_back(std::move(c));
+    }
+}
+
+SceneNode& SceneNode::operator = (const SceneNode& other){
+    parent_ = nullptr;
+    name_ = other.name_;
+    rotation_ = other.rotation_;
+    translation_ = other.translation_;
+    scale_ = other.scale_;
+    components_sorted_ = other.components_sorted_;
+
+    for(auto& component : other.components_){
+        auto c = std::move(component->clone());
+        c->owner_ = this;
+        components_.push_back(std::move(c));
+    }
+
+    for(auto& child : other.children_){
+        std::unique_ptr<SceneNode> c(new SceneNode(*child));
+        c->parent_ = this;
+        children_.push_back(std::move(c));
+    }
+
+    return *this;
 }
 
 SceneNode::~SceneNode(){
@@ -65,34 +103,42 @@ Eigen::Vector3f SceneNode::worldTranslation(){
     else return parent_->worldTransform() * translation_;
 }
 
-void SceneNode::addChild(const std::shared_ptr<SceneNode>& child){
+void SceneNode::addChild(std::unique_ptr<SceneNode>&& child){
     child->parent_ = this;
-    child->root_ = root_;
-    children_.push_back(child);
+    children_.push_back(std::move(child));
 }
 
-std::shared_ptr<SceneNode> SceneNode::findChild(const std::string& name){
+SceneNode* SceneNode::addChild(std::string name){
+    std::unique_ptr<SceneNode> child(new SceneNode(name));
+    child->parent_ = this;
+    SceneNode* ptr = child.get();
+    children_.push_back(std::move(child));
+
+    return ptr;
+}
+
+SceneNode* SceneNode::findChild(const std::string& name){
     for(auto& child : children_){
         if(child->name() == name){
-            return child;
+            return child.get();
         }
 
         auto grand_child = child->findChild(name);
         if(grand_child != nullptr){
             return grand_child;
-        }
+        }SceneNode* addChild(std::string name = "Nameless");
     }
 
     return nullptr;
 }
 
-bool SceneNode::findChildByPointer(const std::shared_ptr<SceneNode>& child){
+bool SceneNode::findChildByPointer(const SceneNode* child){
     for(auto& c : children_){
-        if(c == child){
+        if(c.get() == child){
             return true;
         }
 
-        bool c_desc = child->findChildByPointer(child);
+        bool c_desc = c->findChildByPointer(child);
         if(c_desc){
             return true;
         }
@@ -127,12 +173,12 @@ void SceneNode::name(std::string nme){
     name_ = nme;
 }
 
-std::list<std::shared_ptr<SceneNode> > SceneNode::findChildren(const std::string& name){
-    std::list<std::shared_ptr<SceneNode> > children;
+std::list<SceneNode*> SceneNode::findChildren(const std::string& name){
+    std::list<SceneNode*> children;
 
     for(auto& child : children_){
         if(child->name() == name){
-            children.push_back(child);
+            children.push_back(child.get());
         }
 
         auto grand_children = child->findChildren(name);
@@ -142,22 +188,32 @@ std::list<std::shared_ptr<SceneNode> > SceneNode::findChildren(const std::string
     return children;
 }
 
-bool SceneNode::removeChild(const std::shared_ptr<SceneNode>& child){
-    auto child_iter = std::find(children_.begin(), children_.end(), child);
+std::unique_ptr<SceneNode> SceneNode::removeChild(const SceneNode* child){
+    std::unique_ptr<SceneNode> out = nullptr;
+
+    auto child_iter = children_.begin();
+    for(; child_iter != children_.end(); ++child_iter){
+        if(child == child_iter->get()){
+            break;
+        }
+    }
+
     if(child_iter == children_.end()){
         for(auto& c : children_){
-            if(c->removeChild(child)){
-                return true;
+            out = std::move(c->removeChild(child));
+            if(out != nullptr){
+                return out;
             }
         }
     }
     else{
-        (*child_iter)->parent_ = nullptr;
+        out = std::move(*child_iter);
         children_.erase(child_iter);
-        return true;
+
+        return out;
     }
 
-    return false;
+    return out;
 }
 
 void SceneNode::addComponent(std::unique_ptr<Component>&& component){

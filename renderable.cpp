@@ -69,10 +69,11 @@ Renderable::Renderable(std::unique_ptr<Material>&& mat, Mesh* mesh) : material_(
 Renderable::Renderable(std::unique_ptr<Material>&& mat, Mesh* mesh, GLuint vao_name) : material_(std::move(mat)), mesh_(mesh), vao_name_(vao_name){
 }
 
-Renderable::Renderable(const Renderable& other) : material_(std::move(other.material_->clone())), mesh_(other.mesh_), vao_name_(other.vao_name_){
+Renderable::Renderable(const Renderable& other) : Component(other), material_(std::move(other.material_->clone())), mesh_(other.mesh_), vao_name_(other.vao_name_){
 }
 
 Renderable& Renderable::operator = (const Renderable& other){
+    Component::operator=(other);
     material_ = std::move(other.material_->clone());
     mesh_ = other.mesh_;
     vao_name_ = other.vao_name_;
@@ -93,4 +94,8 @@ Mesh* Renderable::getMesh(){
 
 GLuint Renderable::getVAOName(){
     return vao_name_;
+}
+
+std::unique_ptr<Component> Renderable::clone(){
+    return std::unique_ptr<Component>(new Renderable(*this));
 }

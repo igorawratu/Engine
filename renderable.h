@@ -65,6 +65,8 @@ public:
      * @return a GLuint containing the name of the Renderable's vao
      */
     GLuint getVAOName();
+
+    virtual std::unique_ptr<Component> clone();
 };
 
 #endif // RENDERABLE_H
