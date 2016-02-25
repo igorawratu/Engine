@@ -175,6 +175,12 @@ public:
      * @return unique_ptr containing the removed child
      */
     std::unique_ptr<SceneNode> removeChild(const SceneNode* child);
+
+    /**
+     * @brief Gets the root node of the scene that the current node belongs to
+     * @return observer pointer to the root of the current scene node
+     */
+    SceneNode* getRoot();
 };
 
 #endif // SCENENODE_H

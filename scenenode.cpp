@@ -265,3 +265,11 @@ std::vector<Component*> SceneNode::getComponents(){
 
     return out;
 }
+
+SceneNode* SceneNode::getRoot(){
+    if(parent_ == nullptr){
+        return this;
+    }
+
+    return parent_->getRoot();
+}
