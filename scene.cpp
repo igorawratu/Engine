@@ -12,5 +12,6 @@ SceneNode* Scene::rootNode(){
 }
 
 void Scene::frame(){
+    root_->checkForDeletions();
     root_->frame(Eigen::Affine3f::Identity());
 }

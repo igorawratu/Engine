@@ -26,6 +26,7 @@ private:
     bool marked_for_delete_;
 
 private:
+    void checkForDeletions();
     //forwards SceneNode, its components, and its children by a frame
     void frame(const Eigen::Affine3f& parent_world_transform);
 

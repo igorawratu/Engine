@@ -285,3 +285,18 @@ SceneNode* SceneNode::getRoot(){
 void SceneNode::destroy(){
     marked_for_delete_ = true;
 }
+
+void SceneNode::checkForDeletions(){
+    for(auto iter = children_.begin(); iter != children_.end();){
+        if((*iter)->marked_for_delete_){
+            iter = children_.erase(iter);
+        }
+        else{
+            iter++;
+        }
+    }
+
+    for(auto& child : children_){
+        child->checkForDeletions();
+    }
+}
